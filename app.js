@@ -28,6 +28,8 @@ const sidebar = $("#sidebar");
 const scrim = $("#scrim");
 const menuButton = $("#menuButton");
 $("#chapterCount").textContent = `${chapters.length} chapters`;
+let contentPages = [];
+let contentPage = 0;
 
 function routeFor(chapterId, page) {
   return page === "cheat" ? `#/chapter/${chapterId}/cheat-sheet` : `#/chapter/${chapterId}/part/${page}`;
@@ -60,12 +62,57 @@ function buildNavigation(activeChapter, activePage) {
   nav.querySelectorAll(".chapter-toggle").forEach((button) => {
     button.addEventListener("click", () => {
       const chapter = button.closest(".chapter");
+      const chapterId = Number(chapter.dataset.chapter);
+      const targetChapter = chapters.find((item) => item.id === chapterId);
+      if (chapterId !== activeChapter && targetChapter?.type !== "empty") {
+        location.hash = routeFor(chapterId, 1);
+        closeMenu();
+        return;
+      }
       chapter.classList.toggle("open");
       button.setAttribute("aria-expanded", chapter.classList.contains("open"));
     });
   });
   nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
 }
+
+function showContentPage(pageNumber, shouldScroll = false) {
+  contentPage = Math.max(0, Math.min(pageNumber, contentPages.length - 1));
+  content.innerHTML = contentPages[contentPage].join("");
+  $("#contentPageCount").textContent = `Page ${contentPage + 1} of ${contentPages.length}`;
+  $("#contentPrevious").disabled = contentPage === 0;
+  $("#contentNext").disabled = contentPage === contentPages.length - 1;
+  if (shouldScroll) $(".reading-header").scrollIntoView({ behavior: "smooth", block: "start" });
+  updateProgress();
+}
+
+function paginateContent() {
+  const elements = [...content.children];
+  contentPages = [];
+  let page = [];
+  let characterCount = 0;
+
+  elements.forEach((element) => {
+    const size = element.textContent.length;
+    const startsSection = element.matches("h1, h2");
+    const shouldBreak = page.length && ((startsSection && characterCount >= 2600) || characterCount + size > 5600);
+    if (shouldBreak) {
+      contentPages.push(page);
+      page = [];
+      characterCount = 0;
+    }
+    page.push(element.outerHTML);
+    characterCount += size;
+  });
+  if (page.length) contentPages.push(page);
+
+  const pager = $("#contentPager");
+  pager.hidden = contentPages.length <= 1;
+  if (contentPages.length > 1) showContentPage(0);
+}
+
+$("#contentPrevious").addEventListener("click", () => showContentPage(contentPage - 1, true));
+$("#contentNext").addEventListener("click", () => showContentPage(contentPage + 1, true));
 
 function flatPages() {
   return chapters.filter((chapter) => !chapter.type).flatMap((chapter) => [1, 2, 3, 4, "cheat"].map((page) => ({ chapter, page: String(page) })));
@@ -87,6 +134,9 @@ function updatePageLinks(chapterId, page) {
 async function renderPage() {
   const { chapterId, page } = parseRoute();
   const chapter = chapters.find((item) => item.id === chapterId) || chapters[1];
+  contentPages = [];
+  contentPage = 0;
+  $("#contentPager").hidden = true;
   buildNavigation(chapter.id, page);
 
   $("#eyebrow").textContent = `Chapter ${chapter.id} · ${page === "cheat" ? "Quick revision" : `Part ${page}`}`;
@@ -114,6 +164,7 @@ async function renderPage() {
     } else if (window.marked) {
       marked.use({ gfm: true, breaks: false });
       content.innerHTML = marked.parse(markdown);
+      paginateContent();
     } else {
       content.innerHTML = '<div class="empty-state"><strong>Reader could not start</strong>Please check your internet connection and reload the page.</div>';
     }

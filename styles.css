@@ -224,6 +224,33 @@ button { color: inherit; }
 .loading, .empty-state { padding: 46px 28px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); text-align: center; font-family: ui-sans-serif, system-ui, sans-serif; }
 .empty-state strong { display: block; margin-bottom: 6px; color: var(--ink); font: 700 22px Georgia, serif; }
 
+.content-pager {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  margin-top: 42px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.content-pager[hidden] { display: none; }
+.content-pager button {
+  width: fit-content;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+.content-pager button:last-child { justify-self: end; }
+.content-pager button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.content-pager button:disabled { cursor: default; opacity: .32; }
+.content-pager span { color: var(--muted); font-size: 11px; font-weight: 700; white-space: nowrap; }
+
 .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); }
 .page-link { min-width: 0; padding: 15px 17px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-raised); text-decoration: none; box-shadow: var(--shadow); }
 .page-link small { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
@@ -264,6 +291,9 @@ button { color: inherit; }
   .cheat-link { display: inline-block; margin-top: 16px; }
   .page-nav { gap: 8px; }
   .page-link { padding: 12px; }
+  .content-pager { grid-template-columns: 1fr 1fr; }
+  .content-pager span { grid-column: 1 / -1; grid-row: 1; text-align: center; }
+  .content-pager button { grid-row: 2; }
 }
 
 @media (prefers-reduced-motion: reduce) {
