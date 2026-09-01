@@ -59,6 +59,18 @@ function routeFor(chapterId, page) {
   return page === "cheat" ? `#/chapter/${chapterId}/cheat-sheet` : `#/chapter/${chapterId}/part/${page}`;
 }
 
+function getSavedProgress() {
+  try {
+    return JSON.parse(localStorage.getItem("system-design-progress"));
+  } catch {
+    return null;
+  }
+}
+
+function saveProgress(chapterId, page) {
+  localStorage.setItem("system-design-progress", JSON.stringify({ chapterId, page: String(page) }));
+}
+
 function parseRoute() {
   if (!location.hash || location.hash === "#/") return { home: true };
   const match = location.hash.match(/^#\/chapter\/(\d+)\/(?:part\/(\d+)|(cheat-sheet))$/);
@@ -144,6 +156,15 @@ $("#contentNext").addEventListener("click", () => showContentPage(contentPage + 
 
 function renderHome() {
   const ready = chapters.filter((chapter) => chapter.type !== "empty").length;
+  const saved = getSavedProgress();
+  const savedChapter = saved && chapters.find((chapter) => chapter.id === saved.chapterId && chapter.type !== "empty");
+  const savedPageExists = savedChapter && (saved.page === "cheat" ? savedChapter.hasCheat : savedChapter.parts?.includes(Number(saved.page)));
+  const firstChapter = chapters.find((chapter) => chapter.type !== "empty" && chapter.parts?.length);
+  const continueChapter = savedPageExists ? savedChapter : firstChapter;
+  const continuePage = savedPageExists ? saved.page : String(firstChapter?.parts?.[0] || 1);
+  const continueLabel = savedPageExists
+    ? `Continue: ${continueChapter.title} · ${continuePage === "cheat" ? "Cheat sheet" : `Part ${continuePage}`}`
+    : `Start with ${continueChapter.title}`;
   buildNavigation(0, "");
   $("#eyebrow").textContent = "Your interview study guide";
   $("#pageTitle").textContent = "System Design Field Notes";
@@ -156,7 +177,7 @@ function renderHome() {
   content.innerHTML = `<div class="home-intro">
     <p>Practical, structured notes for learning core system design concepts and revising them quickly before an interview.</p>
     <div class="home-actions">
-      <a class="home-action primary" href="#/chapter/2/part/1">Start with caching →</a>
+      <a class="home-action primary" href="${routeFor(continueChapter.id, continuePage)}">${continueLabel} →</a>
     </div>
     <div class="home-stats" aria-label="Study guide summary">
       <div class="home-stat"><strong>${chapters.length}</strong><span>Total chapters</span></div>
@@ -238,6 +259,7 @@ async function renderPage() {
       marked.use({ gfm: true, breaks: false });
       content.innerHTML = marked.parse(markdown);
       paginateContent();
+      saveProgress(chapter.id, page);
     } else {
       content.innerHTML = '<div class="empty-state"><strong>Reader could not start</strong>Please check your internet connection and reload the page.</div>';
     }
