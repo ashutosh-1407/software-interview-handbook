@@ -121,8 +121,24 @@ button { color: inherit; }
 }
 .chapter-toggle:hover { background: var(--paper); }
 .chapter.active .chapter-toggle { background: var(--accent-soft); color: var(--accent); }
+.chapter.upcoming .chapter-toggle {
+  background: color-mix(in srgb, var(--accent-soft) 42%, transparent);
+  color: color-mix(in srgb, var(--ink) 68%, var(--muted));
+}
+.chapter.upcoming .chapter-toggle:hover { background: color-mix(in srgb, var(--accent-soft) 72%, transparent); }
+.chapter.upcoming.active .chapter-toggle { background: var(--accent-soft); color: var(--accent); }
 .chapter-number { color: var(--muted); font-size: 12px; font-weight: 700; }
 .chapter-title { font-weight: 650; line-height: 1.25; }
+.coming-label {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .68;
+}
 .chapter-chevron { color: var(--muted); transition: transform .2s ease; }
 .chapter.open .chapter-chevron { transform: rotate(90deg); }
 .part-list { display: none; margin: 2px 0 10px 47px; border-left: 1px solid var(--line); }

@@ -47,10 +47,10 @@ function buildNavigation(activeChapter, activePage) {
       const unavailable = chapter.type === "empty";
       return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""}" href="${routeFor(chapter.id, part)}">Part ${part}${unavailable ? '<span class="empty-tag">empty</span>' : ""}</a>`;
     }).join("") + `<a class="cheat ${open && activePage === "cheat" ? "current" : ""} ${chapter.type === "empty" ? "unavailable" : ""}" href="${routeFor(chapter.id, "cheat")}">⚡ Cheat sheet${chapter.type === "empty" ? '<span class="empty-tag">empty</span>' : ""}</a>`;
-    return `<section class="chapter ${open ? "active open" : ""}" data-chapter="${chapter.id}">
+    return `<section class="chapter ${open ? "active open" : ""} ${chapter.type === "empty" ? "upcoming" : ""}" data-chapter="${chapter.id}">
       <button class="chapter-toggle" aria-expanded="${open}">
         <span class="chapter-number">${String(chapter.id).padStart(2, "0")}</span>
-        <span class="chapter-title">${chapter.title}</span>
+        <span class="chapter-title">${chapter.title}${chapter.type === "empty" ? '<small class="coming-label">Coming soon</small>' : ""}</span>
         <span class="chapter-chevron">›</span>
       </button>
       <div class="part-list">${links}</div>
