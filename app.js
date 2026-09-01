@@ -9,7 +9,16 @@ const chapters = [
   { id: 8, title: "Distributed Locks", folder: "8. Distributed Locks" },
   { id: 9, title: "Leader Election", folder: "9. Leader Election" },
   { id: 10, title: "CAP Theorem", folder: "10. CAP Theorem" },
-  { id: 11, title: "Consensus / Raft", folder: "11. Consensus_Raft" }
+  { id: 11, title: "Consensus / Raft", folder: "11. Consensus_Raft" },
+  { id: 12, title: "Circuit Breaker", folder: "12. Circuit Breaker", type: "empty" },
+  { id: 13, title: "Retry and Backoff", folder: "13. Retry and Backoff", type: "empty" },
+  { id: 14, title: "Rate Limiter", folder: "14. Rate Limiter", type: "empty" },
+  { id: 15, title: "Health Checks", folder: "15. Health Checks", type: "empty" },
+  { id: 16, title: "Service Discovery", folder: "16. Service Discovery", type: "empty" },
+  { id: 17, title: "Object Storage", folder: "17. Object Storage", type: "empty" },
+  { id: 18, title: "Search Engine", folder: "18. Search Engine", type: "empty" },
+  { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter", type: "empty" },
+  { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" }
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -18,6 +27,7 @@ const content = $("#content");
 const sidebar = $("#sidebar");
 const scrim = $("#scrim");
 const menuButton = $("#menuButton");
+$("#chapterCount").textContent = `${chapters.length} chapters`;
 
 function routeFor(chapterId, page) {
   return page === "cheat" ? `#/chapter/${chapterId}/cheat-sheet` : `#/chapter/${chapterId}/part/${page}`;
@@ -86,7 +96,7 @@ async function renderPage() {
   cheatLink.href = routeFor(chapter.id, "cheat");
   cheatLink.hidden = chapter.type === "empty" || page === "cheat";
   if (chapter.type === "empty") {
-    content.innerHTML = `<div class="empty-state"><strong>Notes coming soon</strong>The files for this chapter are present but currently empty.</div>`;
+    content.innerHTML = `<div class="empty-state"><strong>Notes coming soon</strong>This chapter is planned and will be added to the study guide soon.</div>`;
     $("#previousLink").classList.add("disabled");
     $("#nextLink").classList.add("disabled");
     return;
