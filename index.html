@@ -7,7 +7,7 @@
     <meta name="description" content="A mobile-friendly reader for system design interview notes." />
     <title>System Design Field Notes</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=15" />
   </head>
   <body>
     <a class="skip-link" href="#reader">Skip to notes</a>
@@ -16,7 +16,7 @@
       <button class="icon-button menu-button" id="menuButton" aria-label="Open chapters" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
-      <a class="brand" href="#/chapter/2/part/1" aria-label="System Design Field Notes home">
+      <a class="brand" href="#/" aria-label="System Design Field Notes home">
         <span class="brand-mark">SD</span>
         <span><strong>Field Notes</strong><small>Interview handbook</small></span>
       </a>
@@ -46,7 +46,7 @@
           <a class="cheat-link" id="cheatLink" href="#/chapter/2/cheat-sheet">⚡ Cheat sheet</a>
         </div>
 
-        <div class="reading-progress" aria-hidden="true"><span id="progressBar"></span></div>
+        <div class="reading-progress" id="progressTrack" aria-hidden="true"><span id="progressBar"></span></div>
         <article class="markdown-body" id="content" aria-live="polite">
           <div class="loading">Opening your notes…</div>
         </article>
@@ -65,6 +65,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
-    <script src="app.js?v=11"></script>
+    <script src="app.js?v=15"></script>
   </body>
 </html>

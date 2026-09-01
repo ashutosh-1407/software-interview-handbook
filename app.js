@@ -1,5 +1,5 @@
 const chapters = [
-  { id: 1, title: "Load Balancer", folder: "1. Load Balancer", type: "empty" },
+  { id: 1, title: "Load Balancer", folder: "1. Load Balancer" },
   { id: 2, title: "Cache", folder: "2. Cache" },
   { id: 3, title: "Database Replication", folder: "3. Database Replication" },
   { id: 4, title: "Database Sharding", folder: "4. Database Sharding" },
@@ -30,25 +30,53 @@ const menuButton = $("#menuButton");
 $("#chapterCount").textContent = `${chapters.length} chapters`;
 let contentPages = [];
 let contentPage = 0;
+let availabilityReady = false;
+
+async function fileExists(path) {
+  try {
+    const response = await fetch(encodeURI(path), { method: "HEAD" });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function detectChapterFiles() {
+  await Promise.all(chapters.map(async (chapter) => {
+    if (chapter.type === "empty") {
+      chapter.parts = [1, 2, 3, 4];
+      chapter.hasCheat = false;
+      return;
+    }
+    const partNumbers = Array.from({ length: 12 }, (_, index) => index + 1);
+    const checks = await Promise.all(partNumbers.map((part) => fileExists(`data/${chapter.folder}/part${part}.md`)));
+    chapter.parts = partNumbers.filter((_, index) => checks[index]);
+    chapter.hasCheat = await fileExists(`data/${chapter.folder}/cheat_sheet.md`);
+  }));
+}
 
 function routeFor(chapterId, page) {
   return page === "cheat" ? `#/chapter/${chapterId}/cheat-sheet` : `#/chapter/${chapterId}/part/${page}`;
 }
 
 function parseRoute() {
+  if (!location.hash || location.hash === "#/") return { home: true };
   const match = location.hash.match(/^#\/chapter\/(\d+)\/(?:part\/(\d+)|(cheat-sheet))$/);
-  if (!match) return { chapterId: 2, page: "1" };
+  if (!match) return { home: true };
   return { chapterId: Number(match[1]), page: match[3] ? "cheat" : match[2] };
 }
 
 function buildNavigation(activeChapter, activePage) {
   nav.innerHTML = chapters.map((chapter) => {
     const open = chapter.id === activeChapter;
-    let links = "";
-    links = [1, 2, 3, 4].map((part) => {
+    const parts = chapter.parts || [];
+    let links = parts.map((part) => {
       const unavailable = chapter.type === "empty";
       return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""}" href="${routeFor(chapter.id, part)}">Part ${part}${unavailable ? '<span class="empty-tag">empty</span>' : ""}</a>`;
-    }).join("") + `<a class="cheat ${open && activePage === "cheat" ? "current" : ""} ${chapter.type === "empty" ? "unavailable" : ""}" href="${routeFor(chapter.id, "cheat")}">⚡ Cheat sheet${chapter.type === "empty" ? '<span class="empty-tag">empty</span>' : ""}</a>`;
+    }).join("");
+    if (chapter.hasCheat || chapter.type === "empty") {
+      links += `<a class="cheat ${open && activePage === "cheat" ? "current" : ""} ${chapter.type === "empty" ? "unavailable" : ""}" href="${routeFor(chapter.id, "cheat")}">⚡ Cheat sheet${chapter.type === "empty" ? '<span class="empty-tag">empty</span>' : ""}</a>`;
+    }
     return `<section class="chapter ${open ? "active open" : ""} ${chapter.type === "empty" ? "upcoming" : ""}" data-chapter="${chapter.id}">
       <button class="chapter-toggle" aria-expanded="${open}">
         <span class="chapter-number">${String(chapter.id).padStart(2, "0")}</span>
@@ -114,8 +142,46 @@ function paginateContent() {
 $("#contentPrevious").addEventListener("click", () => showContentPage(contentPage - 1, true));
 $("#contentNext").addEventListener("click", () => showContentPage(contentPage + 1, true));
 
+function renderHome() {
+  const ready = chapters.filter((chapter) => chapter.type !== "empty").length;
+  buildNavigation(0, "");
+  $("#eyebrow").textContent = "Your interview study guide";
+  $("#pageTitle").textContent = "System Design Field Notes";
+  $("#cheatLink").hidden = true;
+  $("#progressTrack").hidden = true;
+  $("#contentPager").hidden = true;
+  $("#previousLink").classList.add("disabled");
+  $("#nextLink").classList.add("disabled");
+  content.classList.add("home-content");
+  content.innerHTML = `<div class="home-intro">
+    <p>Practical, structured notes for learning core system design concepts and revising them quickly before an interview.</p>
+    <div class="home-actions">
+      <a class="home-action primary" href="#/chapter/2/part/1">Start with caching →</a>
+    </div>
+    <div class="home-stats" aria-label="Study guide summary">
+      <div class="home-stat"><strong>${chapters.length}</strong><span>Total chapters</span></div>
+      <div class="home-stat"><strong>${ready}</strong><span>Ready to read</span></div>
+      <div class="home-stat"><strong>${chapters.length - ready}</strong><span>Coming soon</span></div>
+    </div>
+    <section class="home-guide">
+      <h2>A simple way to study</h2>
+      <ol>
+        <li>Read each chapter in four focused parts.</li>
+        <li>Use the cheat sheet to reinforce the important decisions and trade-offs.</li>
+        <li>Return to the cheat sheets for a quick review before an interview.</li>
+      </ol>
+    </section>
+  </div>`;
+  document.title = "System Design Field Notes";
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
 function flatPages() {
-  return chapters.filter((chapter) => !chapter.type).flatMap((chapter) => [1, 2, 3, 4, "cheat"].map((page) => ({ chapter, page: String(page) })));
+  return chapters.filter((chapter) => chapter.type !== "empty").flatMap((chapter) => {
+    const pages = (chapter.parts || []).map(String);
+    if (chapter.hasCheat) pages.push("cheat");
+    return pages.map((page) => ({ chapter, page }));
+  });
 }
 
 function updatePageLinks(chapterId, page) {
@@ -132,11 +198,18 @@ function updatePageLinks(chapterId, page) {
 }
 
 async function renderPage() {
-  const { chapterId, page } = parseRoute();
+  const route = parseRoute();
+  if (route.home) {
+    renderHome();
+    return;
+  }
+  const { chapterId, page } = route;
   const chapter = chapters.find((item) => item.id === chapterId) || chapters[1];
   contentPages = [];
   contentPage = 0;
   $("#contentPager").hidden = true;
+  $("#progressTrack").hidden = false;
+  content.classList.remove("home-content");
   buildNavigation(chapter.id, page);
 
   $("#eyebrow").textContent = `Chapter ${chapter.id} · ${page === "cheat" ? "Quick revision" : `Part ${page}`}`;
@@ -144,7 +217,7 @@ async function renderPage() {
   document.title = `${chapter.title} · ${page === "cheat" ? "Cheat Sheet" : `Part ${page}`}`;
   const cheatLink = $("#cheatLink");
   cheatLink.href = routeFor(chapter.id, "cheat");
-  cheatLink.hidden = chapter.type === "empty" || page === "cheat";
+  cheatLink.hidden = chapter.type === "empty" || !chapter.hasCheat || page === "cheat";
   if (chapter.type === "empty") {
     content.innerHTML = `<div class="empty-state"><strong>Notes coming soon</strong>This chapter is planned and will be added to the study guide soon.</div>`;
     $("#previousLink").classList.add("disabled");
@@ -205,6 +278,11 @@ $("#themeButton").addEventListener("click", () => {
   localStorage.setItem("notes-theme", next);
 });
 
-window.addEventListener("hashchange", renderPage);
-if (!location.hash) location.hash = "#/chapter/2/part/1";
-else renderPage();
+window.addEventListener("hashchange", () => {
+  if (availabilityReady) renderPage();
+});
+
+detectChapterFiles().then(() => {
+  availabilityReady = true;
+  renderPage();
+});
