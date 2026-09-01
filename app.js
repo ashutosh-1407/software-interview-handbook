@@ -9,7 +9,7 @@ const chapters = [
   { id: 8, title: "Distributed Locks", folder: "8. Distributed Locks" },
   { id: 9, title: "Leader Election", folder: "9. Leader Election" },
   { id: 10, title: "CAP Theorem", folder: "10. CAP Theorem" },
-  { id: 11, title: "Consensus / Raft", folder: "11. Consensus_Raft", type: "empty" }
+  { id: 11, title: "Consensus / Raft", folder: "11. Consensus_Raft" }
 ];
 
 const $ = (selector) => document.querySelector(selector);
