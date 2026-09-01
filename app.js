@@ -187,7 +187,7 @@ function renderHome() {
     <section class="home-guide">
       <h2>A simple way to study</h2>
       <ol>
-        <li>Read each chapter in four focused parts.</li>
+        <li>Read each chapter one focused part at a time.</li>
         <li>Use the cheat sheet to reinforce the important decisions and trade-offs.</li>
         <li>Return to the cheat sheets for a quick review before an interview.</li>
       </ol>
