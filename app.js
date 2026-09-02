@@ -19,7 +19,7 @@ const chapters = [
   { id: 18, title: "Search Engine", folder: "18. Search Engine", type: "empty" },
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter", type: "empty" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
-  { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles", type: "empty", plannedParts: 5 },
+  { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles", type: "partial", plannedParts: 5, availableParts: [1] },
   { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", type: "empty" },
   { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", type: "empty" },
   { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", type: "empty" }
@@ -55,6 +55,13 @@ async function detectChapterFiles() {
   await Promise.all(chapters.map(async (chapter) => {
     if (chapter.type === "empty") {
       chapter.parts = Array.from({ length: chapter.plannedParts || 4 }, (_, index) => index + 1);
+      chapter.hasCheat = false;
+      return;
+    }
+    if (chapter.type === "partial") {
+      chapter.parts = chapter.availableParts || [];
+      const planned = Array.from({ length: chapter.plannedParts || 4 }, (_, index) => index + 1);
+      chapter.upcomingParts = planned.filter((part) => !chapter.parts.includes(part));
       chapter.hasCheat = false;
       return;
     }
@@ -115,9 +122,9 @@ function buildNavigation(activeChapter, activePage, trackSlug = "system-design")
   $("#chapterCount").textContent = `${trackChapters.length} topics`;
   nav.innerHTML = trackChapters.map((chapter) => {
     const open = chapter.id === activeChapter;
-    const parts = chapter.parts || [];
+    const parts = [...(chapter.parts || []), ...(chapter.upcomingParts || [])].sort((a, b) => a - b);
     let links = parts.map((part) => {
-      const unavailable = chapter.type === "empty";
+      const unavailable = chapter.type === "empty" || chapter.upcomingParts?.includes(part);
       return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""}" href="${routeFor(chapter.id, part)}">Part ${part}${unavailable ? '<span class="empty-tag">empty</span>' : ""}</a>`;
     }).join("");
     if (chapter.hasCheat || chapter.type === "empty") {
