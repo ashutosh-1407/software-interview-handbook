@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f6f2e9" />
-    <meta name="description" content="A mobile-friendly reader for system design interview notes." />
-    <title>System Design Field Notes</title>
+    <meta name="description" content="A mobile-friendly reader for system design, SOLID principles, and design pattern interview notes." />
+    <title>Software Interview Handbook</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=17" />
+    <link rel="stylesheet" href="styles.css?v=23" />
   </head>
   <body>
     <a class="skip-link" href="#reader">Skip to notes</a>
@@ -16,9 +16,9 @@
       <button class="icon-button menu-button" id="menuButton" aria-label="Open chapters" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
-      <a class="brand" href="#/" aria-label="System Design Field Notes home">
-        <span class="brand-mark">SD</span>
-        <span><strong>Field Notes</strong><small>Interview handbook</small></span>
+      <a class="brand" href="#/" aria-label="Software Interview Handbook home">
+        <span class="brand-mark">IP</span>
+        <span><strong>Interview Prep</strong><small>Software handbook</small></span>
       </a>
       <button class="icon-button theme-button" id="themeButton" aria-label="Switch color theme">◐</button>
     </header>
@@ -28,8 +28,9 @@
       <aside class="sidebar" id="sidebar" aria-label="Chapters">
         <div class="sidebar-heading">
           <p>Study guide</p>
-          <span id="chapterCount">20 chapters</span>
+          <span id="chapterCount">24 topics</span>
         </div>
+        <nav class="track-nav" id="trackNav" aria-label="Study tracks"></nav>
         <nav id="chapterNav"></nav>
         <div class="sidebar-note">
           <span>Quick tip</span>
@@ -65,6 +66,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
-    <script src="app.js?v=17"></script>
+    <script src="app.js?v=23"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
-# System Design Field Notes
+# Software Interview Handbook
 
-A phone-friendly static reader for the Markdown notes in `data/`.
+A phone-friendly static reader for system design, SOLID principle, and design pattern interview notes in `data/`.
 
 ## GitHub Pages
 

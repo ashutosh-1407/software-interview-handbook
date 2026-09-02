@@ -18,7 +18,17 @@ const chapters = [
   { id: 17, title: "Object Storage", folder: "17. Object Storage", type: "empty" },
   { id: 18, title: "Search Engine", folder: "18. Search Engine", type: "empty" },
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter", type: "empty" },
-  { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" }
+  { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
+  { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles", type: "empty", plannedParts: 5 },
+  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", type: "empty" },
+  { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", type: "empty" },
+  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", type: "empty" }
+];
+
+const tracks = [
+  { slug: "system-design", title: "System Design", description: "Scalability, distributed systems, reliability, messaging, and data architecture." },
+  { slug: "solid-principles", title: "SOLID Principles", description: "Five principles for maintainable, extensible object-oriented software." },
+  { slug: "design-patterns", title: "Design Patterns", description: "Creational, structural, and behavioral approaches to recurring design problems." }
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -27,7 +37,7 @@ const content = $("#content");
 const sidebar = $("#sidebar");
 const scrim = $("#scrim");
 const menuButton = $("#menuButton");
-$("#chapterCount").textContent = `${chapters.length} chapters`;
+$("#chapterCount").textContent = `${chapters.length} topics`;
 let contentPages = [];
 let contentPage = 0;
 let availabilityReady = false;
@@ -44,7 +54,7 @@ async function fileExists(path) {
 async function detectChapterFiles() {
   await Promise.all(chapters.map(async (chapter) => {
     if (chapter.type === "empty") {
-      chapter.parts = [1, 2, 3, 4];
+      chapter.parts = Array.from({ length: chapter.plannedParts || 4 }, (_, index) => index + 1);
       chapter.hasCheat = false;
       return;
     }
@@ -59,6 +69,11 @@ function routeFor(chapterId, page) {
   return page === "cheat" ? `#/chapter/${chapterId}/cheat-sheet` : `#/chapter/${chapterId}/part/${page}`;
 }
 
+function trackForChapter(chapter) {
+  const title = chapter.track || "System Design";
+  return tracks.find((track) => track.title === title) || tracks[0];
+}
+
 function getSavedProgress() {
   try {
     return JSON.parse(localStorage.getItem("system-design-progress"));
@@ -69,17 +84,36 @@ function getSavedProgress() {
 
 function saveProgress(chapterId, page) {
   localStorage.setItem("system-design-progress", JSON.stringify({ chapterId, page: String(page) }));
+  const chapter = chapters.find((item) => item.id === chapterId);
+  if (chapter) {
+    const key = `track-progress-${trackForChapter(chapter).slug}`;
+    const route = routeFor(chapterId, page);
+    sessionStorage.setItem(key, route);
+    localStorage.setItem(key, route);
+  }
 }
 
 function parseRoute() {
   if (!location.hash || location.hash === "#/") return { home: true };
+  const trackMatch = location.hash.match(/^#\/track\/(system-design|solid-principles|design-patterns)$/);
+  if (trackMatch) return { track: trackMatch[1] };
   const match = location.hash.match(/^#\/chapter\/(\d+)\/(?:part\/(\d+)|(cheat-sheet))$/);
   if (!match) return { home: true };
   return { chapterId: Number(match[1]), page: match[3] ? "cheat" : match[2] };
 }
 
-function buildNavigation(activeChapter, activePage) {
-  nav.innerHTML = chapters.map((chapter) => {
+function buildTrackNavigation(activeTrack = "") {
+  $("#trackNav").innerHTML = tracks.map((track) =>
+    `<a class="${track.slug === activeTrack ? "current" : ""}" href="#/track/${track.slug}">${track.title}</a>`
+  ).join("");
+}
+
+function buildNavigation(activeChapter, activePage, trackSlug = "system-design") {
+  const track = tracks.find((item) => item.slug === trackSlug) || tracks[0];
+  const trackChapters = chapters.filter((chapter) => trackForChapter(chapter).slug === track.slug);
+  buildTrackNavigation(track.slug);
+  $("#chapterCount").textContent = `${trackChapters.length} topics`;
+  nav.innerHTML = trackChapters.map((chapter) => {
     const open = chapter.id === activeChapter;
     const parts = chapter.parts || [];
     let links = parts.map((part) => {
@@ -156,18 +190,23 @@ $("#contentNext").addEventListener("click", () => showContentPage(contentPage + 
 
 function renderHome() {
   const ready = chapters.filter((chapter) => chapter.type !== "empty").length;
-  const saved = getSavedProgress();
-  const savedChapter = saved && chapters.find((chapter) => chapter.id === saved.chapterId && chapter.type !== "empty");
-  const savedPageExists = savedChapter && (saved.page === "cheat" ? savedChapter.hasCheat : savedChapter.parts?.includes(Number(saved.page)));
-  const firstChapter = chapters.find((chapter) => chapter.type !== "empty" && chapter.parts?.length);
-  const continueChapter = savedPageExists ? savedChapter : firstChapter;
-  const continuePage = savedPageExists ? saved.page : String(firstChapter?.parts?.[0] || 1);
-  const continueLabel = savedPageExists
-    ? `Continue: ${continueChapter.title} · ${continuePage === "cheat" ? "Cheat sheet" : `Part ${continuePage}`}`
-    : `Start with ${continueChapter.title}`;
-  buildNavigation(0, "");
-  $("#eyebrow").textContent = "Your interview study guide";
-  $("#pageTitle").textContent = "System Design Field Notes";
+  const trackCards = tracks.map((track) => {
+    const savedRoute = localStorage.getItem(`track-progress-${track.slug}`);
+    const savedMatch = savedRoute?.match(/^#\/chapter\/(\d+)\/(?:part\/(\d+)|(cheat-sheet))$/);
+    const savedChapter = savedMatch && chapters.find((chapter) => chapter.id === Number(savedMatch[1]));
+    const validProgress = savedChapter && trackForChapter(savedChapter).slug === track.slug;
+    const pageLabel = savedMatch?.[3] ? "Cheat sheet" : `Part ${savedMatch?.[2] || 1}`;
+    return `<a class="home-track-card" href="${validProgress ? savedRoute : `#/track/${track.slug}`}">
+      <strong>${track.title}</strong>
+      <span>${track.description}</span>
+      <small>${validProgress ? `Continue: ${savedChapter.title} · ${pageLabel}` : `Start ${track.title}`} →</small>
+    </a>`;
+  }).join("");
+  buildTrackNavigation("");
+  nav.innerHTML = "";
+  $("#chapterCount").textContent = `${chapters.length} topics`;
+  $("#eyebrow").textContent = "Your software interview study guide";
+  $("#pageTitle").textContent = "Software Interview Handbook";
   $("#cheatLink").hidden = true;
   $("#progressTrack").hidden = true;
   $("#contentPager").hidden = true;
@@ -175,12 +214,12 @@ function renderHome() {
   $("#nextLink").classList.add("disabled");
   content.classList.add("home-content");
   content.innerHTML = `<div class="home-intro">
-    <p>Practical, structured notes for learning core system design concepts and revising them quickly before an interview.</p>
-    <div class="home-actions">
-      <a class="home-action primary" href="${routeFor(continueChapter.id, continuePage)}">${continueLabel} →</a>
+    <p>Practical, structured notes for mastering system design, SOLID principles, and design patterns before an interview.</p>
+    <div class="home-track-grid">
+      ${trackCards}
     </div>
     <div class="home-stats" aria-label="Study guide summary">
-      <div class="home-stat"><strong>${chapters.length}</strong><span>Total chapters</span></div>
+      <div class="home-stat"><strong>3</strong><span>Study tracks</span></div>
       <div class="home-stat"><strong>${ready}</strong><span>Ready to read</span></div>
       <div class="home-stat"><strong>${chapters.length - ready}</strong><span>Coming soon</span></div>
     </div>
@@ -193,8 +232,20 @@ function renderHome() {
       </ol>
     </section>
   </div>`;
-  document.title = "System Design Field Notes";
+  document.title = "Software Interview Handbook";
   window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function renderTrack(trackSlug) {
+  const track = tracks.find((item) => item.slug === trackSlug) || tracks[0];
+  const trackChapters = chapters.filter((chapter) => trackForChapter(chapter).slug === track.slug);
+  const progressKey = `track-progress-${track.slug}`;
+  const savedRoute = sessionStorage.getItem(progressKey) || localStorage.getItem(progressKey);
+  const savedMatch = savedRoute?.match(/^#\/chapter\/(\d+)\/(?:part\/\d+|cheat-sheet)$/);
+  const savedChapter = savedMatch && chapters.find((chapter) => chapter.id === Number(savedMatch[1]));
+  const validSavedRoute = savedChapter && trackForChapter(savedChapter).slug === track.slug;
+  const firstChapter = trackChapters[0];
+  location.hash = validSavedRoute ? savedRoute : routeFor(firstChapter.id, firstChapter.parts?.[0] || 1);
 }
 
 function flatPages() {
@@ -224,6 +275,10 @@ async function renderPage() {
     renderHome();
     return;
   }
+  if (route.track) {
+    renderTrack(route.track);
+    return;
+  }
   const { chapterId, page } = route;
   const chapter = chapters.find((item) => item.id === chapterId) || chapters[1];
   contentPages = [];
@@ -231,7 +286,7 @@ async function renderPage() {
   $("#contentPager").hidden = true;
   $("#progressTrack").hidden = false;
   content.classList.remove("home-content");
-  buildNavigation(chapter.id, page);
+  buildNavigation(chapter.id, page, trackForChapter(chapter).slug);
 
   $("#eyebrow").textContent = `Chapter ${chapter.id} · ${page === "cheat" ? "Quick revision" : `Part ${page}`}`;
   $("#pageTitle").textContent = chapter.title;
