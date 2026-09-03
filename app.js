@@ -19,7 +19,7 @@ const chapters = [
   { id: 18, title: "Search Engine", folder: "18. Search Engine", type: "empty" },
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter", type: "empty" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
-  { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles", type: "partial", plannedParts: 5, availableParts: [1] },
+  { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles", type: "partial", plannedParts: 5, availableParts: [1, 2] },
   { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", type: "empty" },
   { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", type: "empty" },
   { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", type: "empty" }
