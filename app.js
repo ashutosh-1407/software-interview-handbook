@@ -37,10 +37,21 @@ const content = $("#content");
 const sidebar = $("#sidebar");
 const scrim = $("#scrim");
 const menuButton = $("#menuButton");
+const sidebarCollapse = $("#sidebarCollapse");
 $("#chapterCount").textContent = `${chapters.length} topics`;
 let contentPages = [];
 let contentPage = 0;
 let availabilityReady = false;
+
+function setDesktopSidebar(collapsed) {
+  document.body.classList.toggle("sidebar-collapsed", collapsed);
+  sidebarCollapse.setAttribute("aria-expanded", String(!collapsed));
+  sidebarCollapse.setAttribute("aria-label", collapsed ? "Show chapter sidebar" : "Hide chapter sidebar");
+  localStorage.setItem("notes-sidebar-collapsed", String(collapsed));
+}
+
+setDesktopSidebar(localStorage.getItem("notes-sidebar-collapsed") === "true");
+sidebarCollapse.addEventListener("click", () => setDesktopSidebar(!document.body.classList.contains("sidebar-collapsed")));
 
 async function fileExists(path) {
   try {

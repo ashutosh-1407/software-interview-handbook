@@ -101,7 +101,27 @@ button { color: inherit; }
   padding: 28px 20px 34px;
   background: var(--paper-raised);
   border-right: 1px solid var(--line);
+  transition: transform .22s ease;
 }
+.sidebar-collapse {
+  position: fixed;
+  z-index: 24;
+  top: 94px;
+  left: calc(var(--sidebar-width) - 15px);
+  width: 30px;
+  height: 30px;
+  padding: 0 1px 2px 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper-raised);
+  color: var(--muted);
+  box-shadow: 0 5px 16px rgba(41, 37, 29, .1);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  transition: left .22s ease, transform .22s ease, color .15s ease;
+}
+.sidebar-collapse:hover { color: var(--accent); }
 .sidebar-heading { display: flex; align-items: baseline; justify-content: space-between; padding: 0 9px 18px; }
 .sidebar-heading p { margin: 0; color: var(--forest); font-family: Georgia, serif; font-size: 21px; font-weight: 700; }
 .sidebar-heading span { color: var(--muted); font-size: 12px; }
@@ -183,6 +203,16 @@ button { color: inherit; }
   width: min(920px, calc(100% - var(--sidebar-width)));
   margin-left: calc(var(--sidebar-width) + max(0px, (100vw - var(--sidebar-width) - 920px) / 2));
   padding: 52px clamp(38px, 5vw, 68px) 80px;
+  transition: margin-left .22s ease, width .22s ease;
+}
+
+@media (min-width: 821px) {
+  body.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+  body.sidebar-collapsed .sidebar-collapse { left: 14px; transform: rotate(180deg); }
+  body.sidebar-collapsed .reader {
+    width: min(920px, 100%);
+    margin-left: max(0px, (100vw - 920px) / 2);
+  }
 }
 .reading-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .eyebrow { margin: 0 0 5px; color: var(--accent); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
@@ -325,6 +355,7 @@ button { color: inherit; }
   .brand-mark { width: 34px; height: 34px; }
   .brand small { display: none; }
   .menu-button { display: block; }
+  .sidebar-collapse { display: none; }
   .app-shell { padding-top: 64px; }
   .sidebar {
     inset: 64px auto 0 0;
