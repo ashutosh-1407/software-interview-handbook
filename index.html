@@ -7,7 +7,7 @@
     <meta name="description" content="A mobile-friendly reader for system design, SOLID principles, and design pattern interview notes." />
     <title>Software Interview Handbook</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=31" />
+    <link rel="stylesheet" href="styles.css?v=33" />
   </head>
   <body>
     <a class="skip-link" href="#reader">Skip to notes</a>
@@ -45,7 +45,10 @@
             <p class="eyebrow" id="eyebrow">Chapter 2 · Part 1</p>
             <h1 id="pageTitle">Caching</h1>
           </div>
-          <a class="cheat-link" id="cheatLink" href="#/chapter/2/cheat-sheet">⚡ Cheat sheet</a>
+          <div class="reading-actions">
+            <button class="completion-button" id="completionButton" type="button" aria-pressed="false" hidden>Mark as complete</button>
+            <a class="cheat-link" id="cheatLink" href="#/chapter/2/cheat-sheet">⚡ Cheat sheet</a>
+          </div>
         </div>
 
         <div class="reading-progress" id="progressTrack" aria-hidden="true"><span id="progressBar"></span></div>
@@ -67,6 +70,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
-    <script src="app.js?v=31"></script>
+    <script src="app.js?v=33"></script>
   </body>
 </html>

@@ -100,6 +100,37 @@ function getSavedProgress() {
   }
 }
 
+function getCompletedPages() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem("notes-manually-completed-pages")) || []);
+  } catch {
+    return new Set();
+  }
+}
+
+function setPageComplete(chapterId, page, complete) {
+  const completed = getCompletedPages();
+  const route = routeFor(chapterId, page);
+  if (complete) completed.add(route);
+  else completed.delete(route);
+  localStorage.setItem("notes-manually-completed-pages", JSON.stringify([...completed]));
+}
+
+function updateCompletionButton(chapterId, page) {
+  const button = $("#completionButton");
+  if (page === "cheat") {
+    button.hidden = true;
+    return;
+  }
+  const completed = getCompletedPages().has(routeFor(chapterId, page));
+  button.hidden = false;
+  button.dataset.chapterId = String(chapterId);
+  button.dataset.page = String(page);
+  button.classList.toggle("completed", completed);
+  button.setAttribute("aria-pressed", String(completed));
+  button.textContent = completed ? "✓ Completed" : "Mark as complete";
+}
+
 function saveProgress(chapterId, page) {
   localStorage.setItem("system-design-progress", JSON.stringify({ chapterId, page: String(page) }));
   const chapter = chapters.find((item) => item.id === chapterId);
@@ -129,6 +160,7 @@ function buildTrackNavigation(activeTrack = "") {
 function buildNavigation(activeChapter, activePage, trackSlug = "system-design") {
   const track = tracks.find((item) => item.slug === trackSlug) || tracks[0];
   const trackChapters = chapters.filter((chapter) => trackForChapter(chapter).slug === track.slug);
+  const completedPages = getCompletedPages();
   buildTrackNavigation(track.slug);
   $("#chapterCount").textContent = `${trackChapters.length} topics`;
   nav.innerHTML = trackChapters.map((chapter) => {
@@ -136,7 +168,8 @@ function buildNavigation(activeChapter, activePage, trackSlug = "system-design")
     const parts = [...(chapter.parts || []), ...(chapter.upcomingParts || [])].sort((a, b) => a - b);
     let links = parts.map((part) => {
       const unavailable = chapter.type === "empty" || chapter.upcomingParts?.includes(part);
-      return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""}" href="${routeFor(chapter.id, part)}">Part ${part}${unavailable ? '<span class="empty-tag">empty</span>' : ""}</a>`;
+      const completed = !unavailable && completedPages.has(routeFor(chapter.id, part));
+      return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""} ${completed ? "completed" : ""}" href="${routeFor(chapter.id, part)}">Part ${part}${unavailable ? '<span class="empty-tag">empty</span>' : completed ? '<span class="completion-mark" aria-label="Completed" title="Completed">✓</span>' : ""}</a>`;
     }).join("");
     if (chapter.hasCheat || chapter.type === "empty") {
       links += `<a class="cheat ${open && activePage === "cheat" ? "current" : ""} ${chapter.type === "empty" ? "unavailable" : ""}" href="${routeFor(chapter.id, "cheat")}">⚡ Cheat sheet${chapter.type === "empty" ? '<span class="empty-tag">empty</span>' : ""}</a>`;
@@ -206,6 +239,17 @@ function paginateContent() {
 $("#contentPrevious").addEventListener("click", () => showContentPage(contentPage - 1, true));
 $("#contentNext").addEventListener("click", () => showContentPage(contentPage + 1, true));
 
+$("#completionButton").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  const chapterId = Number(button.dataset.chapterId);
+  const page = button.dataset.page;
+  const completed = button.getAttribute("aria-pressed") === "true";
+  setPageComplete(chapterId, page, !completed);
+  updateCompletionButton(chapterId, page);
+  const chapter = chapters.find((item) => item.id === chapterId);
+  buildNavigation(chapterId, page, trackForChapter(chapter).slug);
+});
+
 function renderHome() {
   const ready = chapters.filter((chapter) => chapter.type !== "empty").length;
   const trackCards = tracks.map((track) => {
@@ -226,6 +270,7 @@ function renderHome() {
   $("#eyebrow").textContent = "Your software interview study guide";
   $("#pageTitle").textContent = "Software Interview Handbook";
   $("#cheatLink").hidden = true;
+  $("#completionButton").hidden = true;
   $("#progressTrack").hidden = true;
   $("#contentPager").hidden = true;
   $("#previousLink").classList.add("disabled");
@@ -310,6 +355,7 @@ async function renderPage() {
   $("#pageTitle").textContent = chapter.title;
   document.title = `${chapter.title} · ${page === "cheat" ? "Cheat Sheet" : `Part ${page}`}`;
   const cheatLink = $("#cheatLink");
+  $("#completionButton").hidden = true;
   cheatLink.href = routeFor(chapter.id, "cheat");
   cheatLink.hidden = chapter.type === "empty" || !chapter.hasCheat || page === "cheat";
   if (chapter.type === "empty") {
@@ -333,6 +379,7 @@ async function renderPage() {
       content.innerHTML = marked.parse(markdown);
       paginateContent();
       saveProgress(chapter.id, page);
+      updateCompletionButton(chapter.id, page);
     } else {
       content.innerHTML = '<div class="empty-state"><strong>Reader could not start</strong>Please check your internet connection and reload the page.</div>';
     }
