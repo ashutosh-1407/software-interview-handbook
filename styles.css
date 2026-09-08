@@ -263,6 +263,7 @@ button { color: inherit; }
   box-shadow: var(--shadow);
 }
 .markdown-body code:not(pre code) { padding: 2px 5px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); font-size: .82em; }
+.markdown-body img { display: block; max-width: 100%; height: auto; margin: 1.7em auto; border-radius: 14px; box-shadow: var(--shadow); }
 .markdown-body table { display: block; width: 100%; overflow-x: auto; margin: 1.5em 0; border-collapse: collapse; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; }
 .markdown-body th, .markdown-body td { min-width: 120px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; }
 .markdown-body th { background: var(--accent-soft); color: var(--ink); }
