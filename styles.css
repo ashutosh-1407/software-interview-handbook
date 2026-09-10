@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --paper: #f6f2e9;
   --paper-raised: #fffdf8;
   --ink: #1f2a28;
@@ -13,6 +14,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --paper: #151a18;
   --paper-raised: #1d2421;
   --ink: #ebeee9;

@@ -412,12 +412,25 @@ function updateProgress() {
 }
 window.addEventListener("scroll", updateProgress, { passive: true });
 
-const storedTheme = localStorage.getItem("notes-theme");
-if (storedTheme) document.documentElement.dataset.theme = storedTheme;
+const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  $("meta[name='theme-color']").content = theme === "dark" ? "#151a18" : "#f6f2e9";
+  $("#themeButton").setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} theme`);
+}
+
+const storedTheme = localStorage.getItem("notes-theme-override");
+applyTheme(storedTheme || (systemTheme.matches ? "dark" : "light"));
+
+systemTheme.addEventListener("change", (event) => {
+  if (!localStorage.getItem("notes-theme-override")) applyTheme(event.matches ? "dark" : "light");
+});
+
 $("#themeButton").addEventListener("click", () => {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = next;
-  localStorage.setItem("notes-theme", next);
+  applyTheme(next);
+  localStorage.setItem("notes-theme-override", next);
 });
 
 window.addEventListener("hashchange", () => {
