@@ -19,8 +19,8 @@
 - [x] Consensus / Raft
 
 ## Reliability & Resilience
-- [ ] Circuit Breaker
-- [ ] Retry / Backoff
+- [x] Circuit Breaker
+- [x] Retry / Backoff
 - [ ] Rate Limiter
 - [ ] Health Checks
 - [ ] Service Discovery
