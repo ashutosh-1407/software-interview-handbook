@@ -10,7 +10,7 @@ const chapters = [
   { id: 9, title: "Leader Election", folder: "9. Leader Election" },
   { id: 10, title: "CAP Theorem", folder: "10. CAP Theorem" },
   { id: 11, title: "Consensus / Raft", folder: "11. Consensus_Raft" },
-  { id: 12, title: "Circuit Breaker", folder: "12. Circuit Breaker", type: "empty" },
+  { id: 12, title: "Circuit Breaker", folder: "12. Circuit Breaker" },
   { id: 13, title: "Retry and Backoff", folder: "13. Retry and Backoff", type: "empty" },
   { id: 14, title: "Rate Limiter", folder: "14. Rate Limiter", type: "empty" },
   { id: 15, title: "Health Checks", folder: "15. Health Checks", type: "empty" },
