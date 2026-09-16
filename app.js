@@ -17,7 +17,7 @@ const chapters = [
   { id: 16, title: "Service Discovery", folder: "16. Service Discovery" },
   { id: 17, title: "Object Storage", folder: "17. Object Storage", type: "empty" },
   { id: 18, title: "Search Engine", folder: "18. Search Engine", type: "empty" },
-  { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter", type: "empty" },
+  { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
   { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles" },
   { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", type: "empty" },

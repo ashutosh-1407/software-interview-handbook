@@ -22,14 +22,14 @@
 - [x] Circuit Breaker
 - [x] Retry / Backoff
 - [ ] Rate Limiter
-- [ ] Health Checks
-- [ ] Service Discovery
+- [x] Health Checks
+- [x] Service Discovery
 
 ## Data & Storage Systems
 - [x] Distributed Cache
 - [ ] Object Storage
 - [ ] Search Engine
-- [ ] Bloom Filter
+- [x] Bloom Filter
 
 ## Correctness & Request Processing
 - [ ] Idempotency
