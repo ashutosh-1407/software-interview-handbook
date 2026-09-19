@@ -20,9 +20,9 @@ const chapters = [
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
   { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles" },
-  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", type: "empty" },
-  { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", type: "empty" },
-  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", type: "empty" }
+  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", entryFile: "factory.md", entryLabel: "Factory Method" },
+  { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", entryFile: "adapter.md", entryLabel: "Adapter" },
+  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", entryFile: "strategy.md", entryLabel: "Strategy" }
 ];
 
 const tracks = [
@@ -64,6 +64,11 @@ async function fileExists(path) {
 
 async function detectChapterFiles() {
   await Promise.all(chapters.map(async (chapter) => {
+    if (chapter.entryFile) {
+      chapter.parts = [1];
+      chapter.hasCheat = false;
+      return;
+    }
     if (chapter.type === "empty") {
       chapter.parts = Array.from({ length: chapter.plannedParts || 4 }, (_, index) => index + 1);
       chapter.hasCheat = false;
@@ -169,7 +174,8 @@ function buildNavigation(activeChapter, activePage, trackSlug = "system-design")
     let links = parts.map((part) => {
       const unavailable = chapter.type === "empty" || chapter.upcomingParts?.includes(part);
       const completed = !unavailable && completedPages.has(routeFor(chapter.id, part));
-      return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""} ${completed ? "completed" : ""}" href="${routeFor(chapter.id, part)}">Part ${part}${unavailable ? '<span class="empty-tag">empty</span>' : completed ? '<span class="completion-mark" aria-label="Completed" title="Completed">✓</span>' : ""}</a>`;
+      const label = chapter.entryLabel || `Part ${part}`;
+      return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""} ${completed ? "completed" : ""}" href="${routeFor(chapter.id, part)}">${label}${unavailable ? '<span class="empty-tag">empty</span>' : completed ? '<span class="completion-mark" aria-label="Completed" title="Completed">✓</span>' : ""}</a>`;
     }).join("");
     if (chapter.hasCheat || chapter.type === "empty") {
       links += `<a class="cheat ${open && activePage === "cheat" ? "current" : ""} ${chapter.type === "empty" ? "unavailable" : ""}" href="${routeFor(chapter.id, "cheat")}">⚡ Cheat sheet${chapter.type === "empty" ? '<span class="empty-tag">empty</span>' : ""}</a>`;
@@ -351,9 +357,10 @@ async function renderPage() {
   content.classList.remove("home-content");
   buildNavigation(chapter.id, page, trackForChapter(chapter).slug);
 
-  $("#eyebrow").textContent = `Chapter ${chapter.id} · ${page === "cheat" ? "Quick revision" : `Part ${page}`}`;
+  const pageLabel = chapter.entryLabel || `Part ${page}`;
+  $("#eyebrow").textContent = `Chapter ${chapter.id} · ${page === "cheat" ? "Quick revision" : pageLabel}`;
   $("#pageTitle").textContent = chapter.title;
-  document.title = `${chapter.title} · ${page === "cheat" ? "Cheat Sheet" : `Part ${page}`}`;
+  document.title = `${chapter.title} · ${page === "cheat" ? "Cheat Sheet" : pageLabel}`;
   const cheatLink = $("#cheatLink");
   $("#completionButton").hidden = true;
   cheatLink.href = routeFor(chapter.id, "cheat");
@@ -366,7 +373,7 @@ async function renderPage() {
   }
 
   content.innerHTML = '<div class="loading">Opening your notes…</div>';
-  const file = page === "cheat" ? "cheat_sheet.md" : `part${page}.md`;
+  const file = page === "cheat" ? "cheat_sheet.md" : chapter.entryFile || `part${page}.md`;
   const path = encodeURI(`data/${chapter.folder}/${file}`);
   try {
     const response = await fetch(path);
