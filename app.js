@@ -20,9 +20,9 @@ const chapters = [
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
   { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles" },
-  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", entryFile: "factory.md", entryLabel: "Factory Method" },
-  { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", entryFile: "adapter.md", entryLabel: "Adapter" },
-  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", entryFile: "strategy.md", entryLabel: "Strategy" }
+  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", entries: [["factory_method.md", "Factory Method"]] },
+  { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", entries: [["adapter.md", "Adapter"], ["decorator.md", "Decorator"]] },
+  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", entries: [["strategy.md", "Strategy"], ["observer.md", "Observer"], ["command.md", "Command"], ["state.md", "State"]] }
 ];
 
 const tracks = [
@@ -64,8 +64,8 @@ async function fileExists(path) {
 
 async function detectChapterFiles() {
   await Promise.all(chapters.map(async (chapter) => {
-    if (chapter.entryFile) {
-      chapter.parts = [1];
+    if (chapter.entries) {
+      chapter.parts = chapter.entries.map((_, index) => index + 1);
       chapter.hasCheat = false;
       return;
     }
@@ -174,7 +174,7 @@ function buildNavigation(activeChapter, activePage, trackSlug = "system-design")
     let links = parts.map((part) => {
       const unavailable = chapter.type === "empty" || chapter.upcomingParts?.includes(part);
       const completed = !unavailable && completedPages.has(routeFor(chapter.id, part));
-      const label = chapter.entryLabel || `Part ${part}`;
+      const label = chapter.entries?.[part - 1]?.[1] || `Part ${part}`;
       return `<a class="${open && activePage === String(part) ? "current" : ""} ${unavailable ? "unavailable" : ""} ${completed ? "completed" : ""}" href="${routeFor(chapter.id, part)}">${label}${unavailable ? '<span class="empty-tag">empty</span>' : completed ? '<span class="completion-mark" aria-label="Completed" title="Completed">✓</span>' : ""}</a>`;
     }).join("");
     if (chapter.hasCheat || chapter.type === "empty") {
@@ -332,7 +332,8 @@ function updatePageLinks(chapterId, page) {
     if (!item) return element.classList.add("disabled");
     element.classList.remove("disabled");
     element.href = routeFor(item.chapter.id, item.page === "cheat" ? "cheat" : item.page);
-    element.querySelector("span").textContent = `${item.chapter.title} · ${item.page === "cheat" ? "Cheat sheet" : `Part ${item.page}`}`;
+    const label = item.chapter.entries?.[Number(item.page) - 1]?.[1] || `Part ${item.page}`;
+    element.querySelector("span").textContent = `${item.chapter.title} · ${item.page === "cheat" ? "Cheat sheet" : label}`;
   };
   setLink($("#previousLink"), pages[index - 1]);
   setLink($("#nextLink"), pages[index + 1]);
@@ -357,7 +358,7 @@ async function renderPage() {
   content.classList.remove("home-content");
   buildNavigation(chapter.id, page, trackForChapter(chapter).slug);
 
-  const pageLabel = chapter.entryLabel || `Part ${page}`;
+  const pageLabel = chapter.entries?.[Number(page) - 1]?.[1] || `Part ${page}`;
   $("#eyebrow").textContent = `Chapter ${chapter.id} · ${page === "cheat" ? "Quick revision" : pageLabel}`;
   $("#pageTitle").textContent = chapter.title;
   document.title = `${chapter.title} · ${page === "cheat" ? "Cheat Sheet" : pageLabel}`;
@@ -373,7 +374,7 @@ async function renderPage() {
   }
 
   content.innerHTML = '<div class="loading">Opening your notes…</div>';
-  const file = page === "cheat" ? "cheat_sheet.md" : chapter.entryFile || `part${page}.md`;
+  const file = page === "cheat" ? "cheat_sheet.md" : chapter.entries?.[Number(page) - 1]?.[0] || `part${page}.md`;
   const path = encodeURI(`data/${chapter.folder}/${file}`);
   try {
     const response = await fetch(path);
