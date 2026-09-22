@@ -20,9 +20,9 @@ const chapters = [
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
   { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles" },
-  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", entries: [["factory_method.md", "Factory Method"]] },
+  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", entries: [["factory_method.md", "Factory Method"], ["abstract_factory.md", "Abstract Factory"], ["builder.md", "Builder"]] },
   { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", entries: [["adapter.md", "Adapter"], ["decorator.md", "Decorator"]] },
-  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", entries: [["strategy.md", "Strategy"], ["observer.md", "Observer"], ["command.md", "Command"], ["state.md", "State"]] }
+  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", entries: [["strategy.md", "Strategy"], ["observer.md", "Observer"], ["command.md", "Command"], ["state.md", "State"], ["chain_of_responsibility.md", "Chain of Responsibility"]] }
 ];
 
 const tracks = [
