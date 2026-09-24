@@ -20,9 +20,9 @@ const chapters = [
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency", type: "empty" },
   { id: 21, title: "SOLID Principles", folder: "21. SOLID Principles", track: "SOLID Principles", entries: [["part1.md", "Single Responsibility (SRP)"], ["part2.md", "Open/Closed (OCP)"], ["part3.md", "Liskov Substitution (LSP)"], ["part4.md", "Interface Segregation (ISP)"], ["part5.md", "Dependency Inversion (DIP)"]] },
-  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["factory_method.md", "Factory Method"], ["abstract_factory.md", "Abstract Factory"], ["builder.md", "Builder"]] },
+  { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["factory_method.md", "Factory Method"], ["abstract_factory.md", "Abstract Factory"], ["builder.md", "Builder"], ["singleton.md", "Singleton"]] },
   { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["adapter.md", "Adapter"], ["decorator.md", "Decorator"], ["proxy.md", "Proxy"], ["facade.md", "Facade"], ["composite.md", "Composite"]] },
-  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["strategy.md", "Strategy"], ["observer.md", "Observer"], ["command.md", "Command"], ["state.md", "State"], ["chain_of_responsibility.md", "Chain of Responsibility"]] }
+  { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["strategy.md", "Strategy"], ["observer.md", "Observer"], ["command.md", "Command"], ["state.md", "State"], ["chain_of_responsibility.md", "Chain of Responsibility"], ["template_method.md", "Template Method"]] }
 ];
 
 const tracks = [
