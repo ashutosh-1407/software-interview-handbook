@@ -32,4 +32,4 @@
 - [x] Bloom Filter
 
 ## Correctness & Request Processing
-- [ ] Idempotency
+- [x] Idempotency
