@@ -27,7 +27,7 @@
 
 ## Data & Storage Systems
 - [x] Distributed Cache
-- [ ] Object Storage
+- [x] Object Storage
 - [ ] Search Engine
 - [x] Bloom Filter
 

@@ -15,7 +15,7 @@ const chapters = [
   { id: 14, title: "Rate Limiter", folder: "14. Rate Limiter", type: "empty" },
   { id: 15, title: "Health Checks", folder: "15. Health Checks" },
   { id: 16, title: "Service Discovery", folder: "16. Service Discovery" },
-  { id: 17, title: "Object Storage", folder: "17. Object Storage", type: "empty" },
+  { id: 17, title: "Object Storage", folder: "17. Object Storage" },
   { id: 18, title: "Search Engine", folder: "18. Search Engine", type: "empty" },
   { id: 19, title: "Bloom Filter", folder: "19. Bloom Filter" },
   { id: 20, title: "Idempotency", folder: "20. Idempotency" },
