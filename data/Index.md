@@ -21,14 +21,14 @@
 ## Reliability & Resilience
 - [x] Circuit Breaker
 - [x] Retry / Backoff
-- [ ] Rate Limiter
+- [x] Rate Limiter
 - [x] Health Checks
 - [x] Service Discovery
 
 ## Data & Storage Systems
 - [x] Distributed Cache
 - [x] Object Storage
-- [ ] Search Engine
+- [x] Search Engine
 - [x] Bloom Filter
 
 ## Correctness & Request Processing
