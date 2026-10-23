@@ -23,7 +23,7 @@ const chapters = [
   { id: 22, title: "Creational Patterns", folder: "22. Creational Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["factory_method.md", "Factory Method"], ["abstract_factory.md", "Abstract Factory"], ["builder.md", "Builder"], ["singleton.md", "Singleton"]] },
   { id: 23, title: "Structural Patterns", folder: "23. Structural Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["adapter.md", "Adapter"], ["decorator.md", "Decorator"], ["proxy.md", "Proxy"], ["facade.md", "Facade"], ["composite.md", "Composite"]] },
   { id: 24, title: "Behavioral Patterns", folder: "24. Behavioral Patterns", track: "Design Patterns", cheatFile: "cheat_sheet.md", entries: [["strategy.md", "Strategy"], ["observer.md", "Observer"], ["command.md", "Command"], ["state.md", "State"], ["chain_of_responsibility.md", "Chain of Responsibility"], ["template_method.md", "Template Method"]] },
-  { id: 25, title: "Glossary", folder: "25. Glossary", entries: [["glossary.md", "Complete Glossary"]] }
+  { id: 25, title: "Glossary", folder: "25. Glossary", entries: [["glossary_v1.md", "Complete Glossary"]] }
 ];
 
 const tracks = [
